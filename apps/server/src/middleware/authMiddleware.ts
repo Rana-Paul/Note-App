@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import JWTServices, { JWTUser } from "../services/jwt";
 
+// extand the Request type
 declare global {
   namespace Express {
     interface Request {
@@ -14,20 +15,24 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
+
+  // get the token from headers
   const token = req.headers.authorization;
 
+  // Check if token is not provided
   if (!token) {
-    return res.status(401).json({
-      message: "Invalid Not Provided",
+    return res.status(400).json({
+      error: "Invalid Not Provided",
     });
   }
 
   try {
+    // Decodeing token
     const data = JWTServices.decodeToken(token);
 
     if (!data) {
       return res.status(401).json({
-        message: "Invalid token",
+        error: "Invalid token",
       });
     }
 
@@ -36,7 +41,7 @@ export const authMiddleware = (
     next();
   } catch (error) {
     return res.status(401).json({
-      message: "Invalid token",
+      error: "Invalid token",
     });
   }
 };

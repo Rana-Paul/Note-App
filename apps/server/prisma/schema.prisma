@@ -16,15 +16,29 @@ model User {
   lastName  String?
   email     String  @unique
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Note      Note[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Note       Note[]
+  SharedNote SharedNote[]
 }
 
 model Note {
-  id     String @id @default(cuid())
-  title  String
-  content   String
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
+  id         String       @id @default(cuid())
+  title      String
+  content    String
+  user       User         @relation(fields: [userId], references: [id])
+  userId     String
+  SharedNote SharedNote[]
+
+  @@index([title])
+}
+
+model SharedNote {
+  id                  String @id @default(cuid())
+  note                Note   @relation(fields: [noteId], references: [id])
+  noteId              String
+  shared_with_user    User   @relation(fields: [shared_with_user_id], references: [id])
+  shared_with_user_id String
+
+  @@unique([noteId, shared_with_user_id])
 }
